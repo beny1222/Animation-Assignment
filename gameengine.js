@@ -9,11 +9,7 @@ class GameEngine {
         // Everything that will be updated and drawn each frame
         this.entities = [];
 
-        // Information on the input
-        this.click = null;
-        this.mouse = null;
-        this.wheel = null;
-        this.keys = {};
+        this.mouseClicked = false;
 
         // Options and the Details
         this.options = options || {
@@ -37,43 +33,17 @@ class GameEngine {
     };
 
     startInput() {
-        const getXandY = e => ({
-            x: e.clientX - this.ctx.canvas.getBoundingClientRect().left,
-            y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
-        });
-        
-        this.ctx.canvas.addEventListener("mousemove", e => {
-            if (this.options.debugging) {
-                console.log("MOUSE_MOVE", getXandY(e));
+        this.ctx.canvas.addEventListener("mousedown", (e) => {
+            if(e.button == 0) {
+                this.mouseClicked = true;
             }
-            this.mouse = getXandY(e);
         });
 
-        this.ctx.canvas.addEventListener("click", e => {
-            if (this.options.debugging) {
-                console.log("CLICK", getXandY(e));
+        this.ctx.canvas.addEventListener("mouseup", (e) => {
+            if(e.button == 0) {
+                this.mouseClicked = false;
             }
-            this.click = getXandY(e);
         });
-
-        this.ctx.canvas.addEventListener("wheel", e => {
-            if (this.options.debugging) {
-                console.log("WHEEL", getXandY(e), e.wheelDelta);
-            }
-            e.preventDefault(); // Prevent Scrolling
-            this.wheel = e;
-        });
-
-        this.ctx.canvas.addEventListener("contextmenu", e => {
-            if (this.options.debugging) {
-                console.log("RIGHT_CLICK", getXandY(e));
-            }
-            e.preventDefault(); // Prevent Context Menu
-            this.rightclick = getXandY(e);
-        });
-
-        this.ctx.canvas.addEventListener("keydown", event => this.keys[event.key] = true);
-        this.ctx.canvas.addEventListener("keyup", event => this.keys[event.key] = false);
     };
 
     addEntity(entity) {
@@ -97,7 +67,7 @@ class GameEngine {
             let entity = this.entities[i];
 
             if (!entity.removeFromWorld) {
-                entity.update();
+                entity.update(this.ctx);
             }
         }
 
@@ -115,5 +85,3 @@ class GameEngine {
     };
 
 };
-
-// KV Le was here :)

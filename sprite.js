@@ -3,32 +3,30 @@
 class Sprite {
     constructor(game) {
         this.game = game;
-        this.animator = new Animator(ASSET_MANAGER.getAsset('./spritesheet.png'), 0, 0, 43, 40, 14, .1);
+        this.animator = new Animator(ASSET_MANAGER.getAsset('./assets/ball2.png'), 0, 0, 140, 140, 1, 1);
 
         this.x = 0;
-        this.y = 0;
+        this.y = 500;
         this.speed = 100;
         this.switchDirectionX = false;
         this.switchDirectionY = false;
+
+        this.powerTimer = 1;
     };
 
 
     draw(ctx) {
-        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2.5)
-
+        this.animator.drawFrame(this.game.clockTick, ctx, this.x, this.y, .3)
+        this.animator.drawArc(this.game.clockTick, ctx, this.x, this.y, this.powerTimer)
     };
 
-    update() {
-        if(this.x + 80 >= 1024) this.switchDirectionX = false;
-        else if(this.x <= 0) this.switchDirectionX = true;
-
-        this.x += (this.switchDirectionX) ? this.speed * this.game.clockTick : (this.speed * this.game.clockTick * -1);
-
-
-        if(this.y + 80 >= 768) this.switchDirectionY = false;
-        else if(this.y <= 0) this.switchDirectionY = true;
-
-        this.y += (this.switchDirectionY) ? this.speed * this.game.clockTick : (this.speed * this.game.clockTick * -1);
+    update(ctx) {
+        if(gameEngine.mouseClicked) {
+            this.powerTimer += .06
+        } else {
+            this.animator.moveBall(ctx, this.x, this.y, this.powerTimer)
+            this.powerTimer = 1;
+        }
     };
 
 
